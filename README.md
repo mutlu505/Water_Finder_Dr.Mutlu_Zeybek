@@ -717,3 +717,213 @@ print("  • Pinus brutia → right of forest green circles (x=5.15, 11.15)")
 print("=" * 70)
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+from matplotlib.path import Path
+
+fig, ax = plt.subplots(1, 1, figsize=(12, 10))
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 12)
+ax.axis("off")
+
+# Box style
+box_style = dict(
+    boxstyle="round,pad=0.3", edgecolor="black", facecolor="lightblue", linewidth=2
+)
+decision_style = dict(
+    boxstyle="round,pad=0.3", edgecolor="black", facecolor="lightyellow", linewidth=2
+)
+result_style = dict(
+    boxstyle="round,pad=0.3", edgecolor="black", facecolor="lightgreen", linewidth=2
+)
+failure_style = dict(
+    boxstyle="round,pad=0.3", edgecolor="black", facecolor="lightcoral", linewidth=2
+)
+
+# Step 1
+ax.text(
+    5,
+    11,
+    "Step 1: Delineate serpentinite body\n(geological map or remote sensing)",
+    ha="center",
+    va="center",
+    fontsize=10,
+    weight="bold",
+    bbox=box_style,
+)
+
+# Arrow
+ax.annotate(
+    "", xy=(5, 10.2), xytext=(5, 10.6), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+
+# Step 2
+ax.text(
+    5,
+    9.5,
+    "Step 2: Map fault traces within serpentinite\n(aerial imagery or field reconnaissance)",
+    ha="center",
+    va="center",
+    fontsize=10,
+    weight="bold",
+    bbox=box_style,
+)
+
+ax.annotate("", xy=(5, 8.7), xytext=(5, 9.1), arrowprops=dict(arrowstyle="->", lw=1.5))
+
+# Step 3
+ax.text(
+    5,
+    8.0,
+    "Step 3: Identify indicator vegetation zones\n(Phragmites, Liquidambar, Erica, high-vigor Pinus)",
+    ha="center",
+    va="center",
+    fontsize=10,
+    weight="bold",
+    bbox=box_style,
+)
+
+ax.annotate("", xy=(5, 7.2), xytext=(5, 7.6), arrowprops=dict(arrowstyle="->", lw=1.5))
+
+# Decision diamond
+ax.text(
+    5,
+    6.3,
+    "Does Phragmites + Liquidambar\nco-occur on a fault trace?",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=decision_style,
+)
+
+# Yes branch
+ax.annotate(
+    "", xy=(2.5, 5.5), xytext=(4, 5.9), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    1.5, 5.7, "YES", ha="center", va="center", fontsize=9, weight="bold", color="green"
+)
+ax.text(
+    2.5,
+    5.0,
+    "Zone A (Highest priority)\nSpring within 10 m\ndownslope of Phragmites",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=result_style,
+)
+
+# No branch
+ax.annotate(
+    "", xy=(7.5, 5.5), xytext=(6, 5.9), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    8.5, 5.7, "NO", ha="center", va="center", fontsize=9, weight="bold", color="red"
+)
+
+# Secondary decision
+ax.text(
+    7.5,
+    4.8,
+    "Phragmites alone\non fault trace?",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=decision_style,
+)
+
+# Yes from secondary
+ax.annotate(
+    "", xy=(7.5, 4.0), xytext=(7.5, 4.4), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    8.3, 4.2, "YES", ha="center", va="center", fontsize=8, weight="bold", color="green"
+)
+ax.text(
+    7.5,
+    3.3,
+    "Zone B\nSpring within 20 m",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=result_style,
+)
+
+# No from secondary - go to third level
+ax.annotate(
+    "", xy=(9.5, 4.0), xytext=(8.5, 4.4), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    10.2, 4.2, "NO", ha="center", va="center", fontsize=8, weight="bold", color="red"
+)
+
+ax.text(
+    9.5,
+    3.3,
+    "Erica + Liquidambar\non fault trace?",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=decision_style,
+)
+
+# Yes from third
+ax.annotate(
+    "", xy=(9.5, 2.5), xytext=(9.5, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    10.3, 2.7, "YES", ha="center", va="center", fontsize=8, weight="bold", color="green"
+)
+ax.text(
+    9.5,
+    1.8,
+    "Zone C (Seasonal)\nSpring within 30 m",
+    ha="center",
+    va="center",
+    fontsize=9,
+    weight="bold",
+    bbox=result_style,
+)
+
+# No from third
+ax.annotate(
+    "", xy=(7.0, 2.5), xytext=(8.5, 2.9), arrowprops=dict(arrowstyle="->", lw=1.5)
+)
+ax.text(
+    6.5, 2.7, "NO", ha="center", va="center", fontsize=8, weight="bold", color="red"
+)
+ax.text(
+    7.0,
+    1.8,
+    "Zone D (Low priority)\nExcavate or shallow well\non fault trace with high-vigor Pinus",
+    ha="center",
+    va="center",
+    fontsize=8,
+    weight="bold",
+    bbox=failure_style,
+)
+
+# Title
+ax.text(
+    5,
+    11.8,
+    "Workflow for Spring Prediction in Serpentinite Terrain\n(Marmaris Heuristic Framework)",
+    ha="center",
+    va="center",
+    fontsize=12,
+    weight="bold",
+)
+
+plt.tight_layout()
+plt.savefig("spring_prediction_workflow.png", dpi=400, bbox_inches="tight")
+plt.show()
+
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+
+
