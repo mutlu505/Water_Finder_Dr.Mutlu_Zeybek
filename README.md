@@ -926,4 +926,237 @@ plt.show()
 
 XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
 
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs
+import cartopy.feature as cfeature
+import pandas as pd
+
+# Define the serpentinite localities DataFrame FIRST
+serpentinite_localities = pd.DataFrame(
+    {
+        "name": [
+            "Marmaris Peridotite (Turkey)",
+            "Troodos Ophiolite (Cyprus)",
+            "Semail Ophiolite (Oman)",
+            "New Caledonia",
+            "Coast Ranges (California)",
+            "Bay of Islands (Newfoundland)",
+            "Thetford Mines (Quebec)",
+            "Urals (Russia)",
+            "Balkan Ophiolites (Greece/Albania)",
+            "Dinaride Ophiolites (Serbia/Bosnia)",
+            "Zambales Ophiolite (Philippines)",
+            "Papua New Guinea",
+            "Andaman-Nicobar",
+            "Kazakhstan (East)",
+            "Western Alps (Italy/Switzerland)",
+            "Ligurian Ophiolites (Italy)",
+            "Stanovoy Belt (Russia)",
+            "Tibetan Plateau (Yarlung-Zangbo)",
+            "Japan (Mikabu Belt)",
+            "Cuba (Mayarí-Baracoa)",
+            "Venezuela (Loma de Hierro)",
+            "Colombia (Médanos)",
+            "South Africa (Barberton)",
+            "Zimbabwe (Shurugwi)",
+            "Sri Lanka (Ussangoda)",
+            "Malaysia (Sabah)",
+            "Indonesia (East Sulawesi)",
+            "Myanmar (Jade Mines Belt)",
+            "Afghanistan (Kabul)",
+            "Iran (Neyriz)",
+        ],
+        "lat": [
+            36.85,
+            34.95,
+            23.25,
+            -21.25,
+            39.75,
+            49.50,
+            45.95,
+            55.00,
+            39.50,
+            43.50,
+            15.50,
+            -6.00,
+            12.50,
+            49.00,
+            45.50,
+            44.50,
+            56.00,
+            29.50,
+            33.50,
+            20.50,
+            10.50,
+            4.50,
+            -25.50,
+            -19.50,
+            6.50,
+            6.00,
+            -2.50,
+            25.50,
+            34.50,
+            29.50,
+        ],
+        "lon": [
+            28.27,
+            33.00,
+            58.00,
+            165.00,
+            -123.00,
+            -57.00,
+            -71.00,
+            60.00,
+            22.00,
+            18.00,
+            120.00,
+            147.00,
+            93.50,
+            80.00,
+            7.00,
+            9.00,
+            120.00,
+            85.00,
+            135.00,
+            -75.00,
+            -67.00,
+            -73.00,
+            31.00,
+            30.00,
+            80.50,
+            117.00,
+            122.00,
+            96.50,
+            69.00,
+            53.00,
+        ],
+    }
+)
+
+# Create the map
+fig = plt.figure(figsize=(16, 10), dpi=150)
+ax = plt.axes(projection=ccrs.Robinson())
+ax.set_global()
+
+# Add base features
+ax.add_feature(cfeature.LAND, facecolor="#f5f5dc", alpha=0.7)
+ax.add_feature(cfeature.OCEAN, facecolor="#e0f0ff", alpha=0.5)
+ax.add_feature(cfeature.COASTLINE, linewidth=0.5, edgecolor="gray")
+ax.add_feature(cfeature.BORDERS, linewidth=0.3, edgecolor="lightgray", alpha=0.5)
+
+# Plot all serpentinite occurrences as brown circles
+ax.scatter(
+    serpentinite_localities["lon"],
+    serpentinite_localities["lat"],
+    c="#8B4513",
+    s=80,
+    alpha=0.7,
+    edgecolors="black",
+    linewidth=0.3,
+    transform=ccrs.PlateCarree(),
+    zorder=5,
+    label="Serpentinite / Ophiolite occurrence",
+)
+
+# Plot Marmaris specifically (red star)
+marmaris = serpentinite_localities[
+    serpentinite_localities["name"] == "Marmaris Peridotite (Turkey)"
+]
+ax.scatter(
+    marmaris["lon"],
+    marmaris["lat"],
+    c="red",
+    s=300,
+    marker="*",
+    transform=ccrs.PlateCarree(),
+    zorder=10,
+    label="Marmaris Peridotite (this study)",
+)
+
+# Add labels for major occurrences (size > 0.9 criteria from original)
+major_sites = serpentinite_localities[
+    serpentinite_localities["name"].isin(
+        [
+            "Marmaris Peridotite (Turkey)",
+            "Troodos Ophiolite (Cyprus)",
+            "Semail Ophiolite (Oman)",
+            "New Caledonia",
+            "Urals (Russia)",
+            "Tibetan Plateau (Yarlung-Zangbo)",
+            "Zambales Ophiolite (Philippines)",
+        ]
+    )
+]
+
+for idx, row in major_sites.iterrows():
+    ax.text(
+        row["lon"] + (2 if row["lon"] < 0 else -3),
+        row["lat"] + 2,
+        row["name"].split("(")[0].strip(),
+        transform=ccrs.PlateCarree(),
+        fontsize=7,
+        ha="center" if row["lon"] < 0 else "right",
+        va="bottom",
+        alpha=0.8,
+        bbox=dict(
+            boxstyle="round,pad=0.2", facecolor="white", alpha=0.7, edgecolor="none"
+        ),
+    )
+
+# Add title
+plt.title(
+    "Global Distribution of Serpentinite-Bearing Ophiolites\n"
+    "Major Ultramafic Bodies and Serpentinite Terranes",
+    fontsize=14,
+    fontweight="bold",
+    pad=20,
+)
+
+# Add legend
+ax.legend(loc="lower left", fontsize=9, framealpha=0.9)
+
+# Add gridlines
+gl = ax.gridlines(
+    draw_labels=True, linestyle="--", linewidth=0.3, color="gray", alpha=0.5
+)
+gl.top_labels = False
+gl.right_labels = False
+gl.left_labels = True
+gl.bottom_labels = True
+
+# Add annotation for Marmaris
+ax.annotate(
+    "Marmaris Peridotite\nSW Türkiye\n(See this study)",
+    xy=(28.27, 36.85),
+    xycoords=ccrs.PlateCarree()._as_mpl_transform(ax),
+    xytext=(30, 15),
+    textcoords="offset points",
+    fontsize=8,
+    fontweight="bold",
+    arrowprops=dict(arrowstyle="->", color="red", lw=1.5),
+    bbox=dict(
+        boxstyle="round,pad=0.3", facecolor="lightyellow", alpha=0.9, edgecolor="red"
+    ),
+    color="darkred",
+)
+
+plt.tight_layout()
+plt.savefig("serpentinite_world_map.png", dpi=300, bbox_inches="tight")
+plt.show()
+
+# Print summary
+print("=" * 60)
+print("GLOBAL SERPENTINITE/OPHIOLITE OCCURRENCES")
+print("=" * 60)
+print(f"Number of major occurrences plotted: {len(serpentinite_localities)}")
+print(f"\nKey regions represented:")
+for name in serpentinite_localities["name"].values[:15]:
+    print(f"  • {name.split('(')[0].strip()}")
+print("  ...")
+print("\nNote: Map shows approximate locations of known serpentinite bodies.")
+print("Serpentinites are hydrated ultramafic rocks found in:")
+print("  • Ophiolite complexes (obducted oceanic lithosphere)")
+print("  • Alpine-type peridotite massifs")
+print("  • Subduction zone mélanges")
+print("=" * 60)
 
